@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>САЙЛАУ • Карта избирательных участков и комиссий</title>
+  <title>Карта избирательных участков и комиссий</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="https://api-maps.yandex.ru/2.1/?apikey=fd23e935-ff02-4ad4-9401-731a5f8afab7&lang=ru_RU"></script>
   <style>
@@ -129,58 +129,11 @@
       flex-shrink: 0;
     }
 
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
-    .pill-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-gold {
-      background: #fde047;
-      color: #713f12;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-    }
-
-    .badge-status {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34d399;
-      border: 1px solid rgba(52, 211, 153, 0.4);
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .badge-status::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      background: #34d399;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 6px #34d399;
-    }
-
     .sidebar-header h2 {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.3px;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
       color: #ffffff;
       line-height: 1.3;
       white-space: nowrap;
@@ -189,7 +142,7 @@
     }
 
     .sidebar-header p {
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       color: #99f6e4;
       margin-bottom: 10px;
     }
@@ -297,30 +250,6 @@
 
     .search-control::placeholder {
       color: #94a3b8;
-    }
-
-    .btn-geo {
-      width: 100%;
-      padding: 7px 12px;
-      margin-top: 4px;
-      background: #0d9488;
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
-    }
-
-    .btn-geo:hover {
-      background: #0f766e;
-      transform: translateY(-1px);
     }
 
     .counter {
@@ -468,12 +397,6 @@
 
   <div id="sidebar">
     <div class="sidebar-header">
-      <div class="header-top">
-        <div class="pill-group">
-          <span class="badge-gold">САЙЛАУ • МАСЛИХАТ</span>
-          <span class="badge-status">Онлайн</span>
-        </div>
-      </div>
       <h2 id="districtTitle">Павлодарская область</h2>
       <p id="districtSubtitle">Избирательные округа и участки</p>
       
@@ -526,14 +449,10 @@
         </select>
       </div>
 
-      <div class="form-group" style="margin-bottom: 4px;">
+      <div class="form-group" style="margin-bottom: 2px;">
         <label class="form-label" for="searchInput">3. Поиск</label>
         <input type="text" id="searchInput" class="search-control" placeholder="Поиск по номеру ООИК/ГОИК/РОИК/УИК, адресу...">
       </div>
-
-      <button class="btn-geo" onclick="findNearestUIK()">
-        <span>📍</span> Ближайший участок
-      </button>
     </div>
     
     <div class="counter" id="counterText">Отображено: 0</div>
@@ -773,7 +692,6 @@
       { district: "Павлодарский район", id: 11, lat: 51.918560, lng: 77.326513, object: "Дом культуры с. Новоямышево", address: "с. Новоямышево, ул. Д. Кунаева 10", tel: "320745", uiks: [407, 408, 409] }
     ];
 
-    // Массив привязки участков к округам
     const districtRoioMap = {
       "город Павлодар": pvlGoikList,
       "город Экибастуз": ekbGoikList,
@@ -799,7 +717,6 @@
       return null;
     }
 
-    // Реестр УИК
     const fullRawData = [
       [1,52.344909,76.874588,"ГККП «Дворец культуры имени Естая»","улица 6 Жанааульская 6/1","город Павлодар"],
       [5,52.302151,76.92183,"ГУ «Областная казахская гимназия-интернат им. И. Алтынсарина»","улица Айманова 35","город Павлодар"],
@@ -1450,42 +1367,6 @@
       document.querySelectorAll('.item').forEach(el => el.classList.remove('active-item'));
     }
 
-    window.findNearestUIK = function() {
-      if (!navigator.geolocation) {
-        alert("Геолокация не поддерживается вашим браузером");
-        return;
-      }
-      const btn = document.querySelector('.btn-geo');
-      btn.textContent = "⌛ Определение координат...";
-      
-      navigator.geolocation.getCurrentPosition(pos => {
-        btn.innerHTML = "<span>📍</span> Ближайший участок";
-        const userLat = pos.coords.latitude;
-        const userLng = pos.coords.longitude;
-
-        let nearest = null;
-        let minDist = Infinity;
-
-        uikRegistry.forEach(item => {
-          const d = Math.hypot(item.lat - userLat, item.lng - userLng);
-          if (d < minDist) {
-            minDist = d;
-            nearest = item;
-          }
-        });
-
-        if (nearest) {
-          document.getElementById('districtSelect').value = nearest.district;
-          document.getElementById('toggleUik').checked = true;
-          onDistrictChange();
-          focusItem(nearest.id);
-        }
-      }, err => {
-        btn.innerHTML = "<span>📍</span> Ближайший участок";
-        alert("Не удалось определить местоположение. Проверьте разрешения GPS в браузере.");
-      });
-    };
-
     function onDistrictChange() {
       closeInfoCard();
       const distVal = document.getElementById('districtSelect').value;
@@ -1496,6 +1377,11 @@
       const subtitleEl = document.getElementById('districtSubtitle');
 
       titleEl.textContent = distVal === 'all' ? 'Павлодарская область' : distVal;
+
+      // Если выбран район или город — всегда включаем тумблер УИК
+      if (distVal !== "all" && distVal !== "Областная окружная избирательная комиссия") {
+        document.getElementById('toggleUik').checked = true;
+      }
 
       if (distVal === "all") {
         okrugGroup.style.display = "none";
