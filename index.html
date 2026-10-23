@@ -2,23 +2,20 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>САЙЛАУ • Карта избирательных участков и комиссий</title>
+  <title>Карта избирательных участков и комиссий</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <script src="https://api-maps.yandex.ru/2.1/?apikey=fd23e935-ff02-4ad4-9401-731a5f8afab7&lang=ru_RU"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0f172a; }
 
-    /* Карта на десктопе справа оставляет место под сайдбар */
     #map {
       position: absolute;
       top: 0; bottom: 0; left: 0; right: 440px;
       height: 100%;
       background: #e2e8f0;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Сайдбар на десктопе */
     #sidebar {
       position: absolute;
       top: 0; bottom: 0; right: 0;
@@ -30,11 +27,9 @@
       flex-direction: column;
       z-index: 1000;
       border-left: 1px solid #cbd5e1;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .sheet-handle { display: none; }
-    .mobile-tab-bar { display: none; }
+    .sheet-handle-area { display: none; }
 
     .sidebar-header {
       padding: 14px 18px 12px 18px;
@@ -58,17 +53,18 @@
     .sidebar-header p {
       font-size: 0.8rem;
       color: #99f6e4;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
+    /* Apple-style Switches (iOS) */
     .toggles-container {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       background: rgba(255, 255, 255, 0.08);
-      padding: 6px 10px;
-      border-radius: 10px;
+      padding: 8px 12px;
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.14);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       align-items: center;
       justify-content: space-around;
     }
@@ -76,15 +72,16 @@
     .toggle-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
       user-select: none;
     }
 
     .toggle-switch {
       position: relative;
-      width: 38px;
-      height: 22px;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
     }
 
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -93,35 +90,36 @@
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #475569;
-      transition: .25s;
-      border-radius: 22px;
+      background-color: rgba(255, 255, 255, 0.25);
+      transition: background-color 0.25s ease;
+      border-radius: 30px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 16px;
-      width: 16px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .25s;
+      height: 24px;
+      width: 24px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #ffffff;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
     }
 
-    input:checked + .slider.slider-oik { background-color: #ef4444; }
-    input:checked + .slider.slider-uik { background-color: #0d9488; }
-    input:checked + .slider:before { transform: translateX(16px); }
+    input:checked + .slider.slider-oik { background-color: #ff3b30; }
+    input:checked + .slider.slider-uik { background-color: #34c759; }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     .toggle-label {
       font-size: 0.82rem;
       font-weight: 700;
       color: #f1f5f9;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
-    .form-group { margin-bottom: 7px; }
+    .form-group { margin-bottom: 8px; }
     
     .form-label {
       display: block;
@@ -138,8 +136,8 @@
       height: 42px;
       padding: 0 12px;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
       font-size: 0.92rem;
       outline: none;
@@ -150,7 +148,7 @@
 
     .select-control:focus, .search-control:focus {
       border-color: #38bdf8;
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.18);
       box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
     }
 
@@ -194,10 +192,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
-    .item:hover {
-      border-color: #0d9488;
-      transform: translateY(-1px);
-    }
+    .item:hover { border-color: #0d9488; transform: translateY(-1px); }
 
     .item.active-item {
       background: #f0fdfa;
@@ -262,7 +257,6 @@
       line-height: 1.3;
     }
 
-    /* Карточка с деталями */
     #infoCard {
       position: absolute;
       top: 18px;
@@ -340,7 +334,7 @@
     }
 
     /* ========================================================
-       АДАПТИВ ДЛЯ ТЕЛЕФОНОВ: ШТОРКА С ПЕРЕКЛЮЧЕНИЕМ КАРТА / СПИСОК
+       МОБИЛЬНЫЙ РЕЖИМ 2ГИС: 3 ПОЛОЖЕНИЯ ШТОРКИ И ПОИСК СВЕРХУ
        ======================================================== */
     @media (max-width: 768px) {
       #map {
@@ -349,7 +343,6 @@
         height: 100%; width: 100%;
       }
 
-      /* Нижняя панель-шторка на мобилках */
       #sidebar {
         position: absolute;
         top: auto;
@@ -357,87 +350,62 @@
         left: 0;
         right: 0;
         width: 100%;
-        height: 82vh;
+        height: 88vh;
         border-left: none;
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
-        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.28);
-        transform: translateY(calc(100% - 215px)); /* В свернутом виде видны фильтры */
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.35);
         z-index: 1050;
+        transform: translateY(calc(88vh - 78px)); /* 1 этап: полностью опущено, виден поиск */
+        transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
       }
 
-      /* Класс развернутого списка */
-      #sidebar.sheet-expanded {
-        transform: translateY(0);
+      #sidebar.sheet-collapsed {
+        transform: translateY(calc(88vh - 78px)); /* Этап 1: поиск виден (~78px) */
       }
 
-      /* Ручка для свайпа шторки */
-      .sheet-handle {
-        display: block;
-        width: 100%;
-        padding: 8px 0 4px 0;
-        text-align: center;
+      #sidebar.sheet-half {
+        transform: translateY(calc(88vh - 46vh)); /* Этап 2: половина экрана (~46vh) */
+      }
+
+      #sidebar.sheet-full {
+        transform: translateY(0); /* Этап 3: полностью открыт список */
+      }
+
+      .sheet-handle-area {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
         background: #064e5b;
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
-        cursor: pointer;
+        cursor: grab;
+        touch-action: none;
       }
 
-      .handle-bar {
+      .sheet-handle-bar {
         width: 44px;
         height: 5px;
         background: rgba(255, 255, 255, 0.5);
         border-radius: 10px;
-        margin: 0 auto;
-      }
-
-      /* Кнопки переключения режимов на телефоне */
-      .mobile-tab-bar {
-        display: flex;
-        background: #064e5b;
-        padding: 4px 14px 8px 14px;
-        gap: 8px;
-      }
-
-      .tab-btn {
-        flex: 1;
-        height: 38px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        font-size: 0.88rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        cursor: pointer;
-      }
-
-      .tab-btn.active {
-        background: #ffffff;
-        color: #064e5b;
-        border-color: #ffffff;
       }
 
       .sidebar-header {
-        padding: 6px 14px 10px 14px;
+        padding: 4px 14px 10px 14px;
       }
 
       .sidebar-header h2 { font-size: 1.05rem; }
       .sidebar-header p { display: none; }
 
-      .toggles-container {
-        margin-bottom: 6px;
-        padding: 5px 8px;
+      .search-group-mobile {
+        margin-bottom: 8px;
       }
 
-      .form-group { margin-bottom: 5px; }
-
-      .select-control, .search-control {
-        height: 40px;
-        font-size: 0.88rem;
+      .search-control {
+        height: 44px;
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.16);
       }
 
       #infoCard {
@@ -455,7 +423,6 @@
 
   <div id="map"></div>
 
-  <!-- Всплывающая карточка выбранного участка/округа -->
   <div id="infoCard">
     <div class="info-card-header">
       <div id="cardTitle" class="info-card-title"></div>
@@ -466,25 +433,24 @@
     <div id="cardDistrict" class="info-card-district"></div>
   </div>
 
-  <div id="sidebar">
-    <!-- Ручка шторки для телефонов -->
-    <div class="sheet-handle" onclick="toggleMobileSheet()">
-      <div class="handle-bar"></div>
-    </div>
-
-    <!-- Кнопки мобильного переключения -->
-    <div class="mobile-tab-bar">
-      <button class="tab-btn active" id="tabMapBtn" onclick="setMobileMode('map')">🗺️ Карта</button>
-      <button class="tab-btn" id="tabListBtn" onclick="setMobileMode('list')">📋 Список участков</button>
+  <div id="sidebar" class="sheet-half">
+    <!-- Ручка шторки как в 2ГИС -->
+    <div class="sheet-handle-area" id="sheetHandle">
+      <div class="sheet-handle-bar"></div>
     </div>
 
     <div class="sidebar-header">
+      <!-- 1. Поиск в самом верху (остается при опускании шторки) -->
+      <div class="form-group search-group-mobile">
+        <input type="text" id="searchInput" class="search-control" placeholder="🔍 Поиск по номеру УИК, РОИК, адресу...">
+      </div>
+
       <h2 id="districtTitle">Павлодарская область</h2>
       <p id="districtSubtitle">Избирательные округа и участки</p>
       
-      <!-- Тумблеры Округа / Участки -->
+      <!-- Apple-style тумблеры -->
       <div class="toggles-container">
-        <label class="toggle-item" title="Показывать избирательные округа (ООИК / ГОИК / РОИК)">
+        <label class="toggle-item" title="Показывать округа (ООИК / ГОИК / РОИК)">
           <div class="toggle-switch">
             <input type="checkbox" id="toggleOik" checked onchange="onToggleLayers()">
             <span class="slider slider-oik"></span>
@@ -500,9 +466,9 @@
         </label>
       </div>
 
-      <!-- 1. Выбор территории -->
+      <!-- Выбор территории -->
       <div class="form-group">
-        <label class="form-label" for="districtSelect">1. Выбор территории</label>
+        <label class="form-label" for="districtSelect">Территория / Район</label>
         <select id="districtSelect" class="select-control" onchange="onDistrictChange()">
           <optgroup label="Окружной уровень">
             <option value="Областная окружная избирательная комиссия">🏛️ Областная окружная избирательная комиссия (ООИК № 1–16)</option>
@@ -526,18 +492,12 @@
         </select>
       </div>
 
-      <!-- 2. Выбор округа -->
+      <!-- Выбор округа -->
       <div class="form-group" id="okrugGroup">
-        <label class="form-label" for="okrugSelect" id="okrugLabel">2. Выбор округа</label>
+        <label class="form-label" for="okrugSelect" id="okrugLabel">Избирательный округ</label>
         <select id="okrugSelect" class="select-control" onchange="onOkrugChange()">
           <option value="all">Все округа</option>
         </select>
-      </div>
-
-      <!-- 3. Поиск -->
-      <div class="form-group">
-        <label class="form-label" for="searchInput">3. Поиск</label>
-        <input type="text" id="searchInput" class="search-control" placeholder="Поиск по номеру ООИК/ГОИК/РОИК/УИК, адресу...">
       </div>
     </div>
     
@@ -649,7 +609,7 @@
       { id: 12, lat: 52.136620, lng: 76.857960, object: "ГККП «КДЦ города Аксу»", address: "г. Аксу, ул. Комсомольская 3", tel: "651068", uiks: [474, 509, 578] }
     ];
 
-    // Все РОИК сельских районов
+    // РОИК районов
     const districtRoikList = [
       // Железинский район
       { district: "Железинский район", id: 1, lat: 53.628283, lng: 75.158159, object: "Башмачинская сельская библиотека", address: "с. Башмачное, Совхозный пер. 2", tel: "650859", uiks: [213, 214, 215, 243] },
@@ -803,7 +763,6 @@
       return null;
     }
 
-    // Реестр УИК
     const fullRawData = [
       [1,52.344909,76.874588,"ГККП «Дворец культуры имени Естая»","улица 6 Жанааульская 6/1","город Павлодар"],
       [5,52.302151,76.92183,"ГУ «Областная казахская гимназия-интернат им. И. Алтынсарина»","улица Айманова 35","город Павлодар"],
@@ -1121,7 +1080,7 @@
       // Иртышский район
       [252,53.342414,75.448584,"КГУ «Иртышская СОШ № 1»","село Иртышск, ул. Кожаберген батыра 19","Иртышский район"],
       [253,53.338613,75.458699,"КГУ «Иртышская СОШ № 2»","село Иртышск, ул. Богенбая 51","Иртышский район"],
-      [254,53.331628,75.459301,"Иртышская детская школа искусств","село Иртышск, ул. Исы Байзакова 10","Иртышский район"],
+      [254,53.339549,75.461125,"Центральная районная библиотека","село Иртышск, ул. Кажимукана 59","Иртышский район"],
       [255,53.328117,75.456121,"КГУ «Иртышская СОШ № 3»","село Иртышск, ул. Кажимукана 134","Иртышский район"],
       [256,53.316472,75.45755,"КГУ «Иртышская СОШ № 4»","село Иртышск, ул. Бурягина 14","Иртышский район"],
       [257,53.382453,75.425525,"Сельский клуб села Кызылжар","село Кызылжар, ул. Ақжүрек 1","Иртышский район"],
@@ -1401,29 +1360,67 @@
 
       onDistrictChange();
       document.getElementById('searchInput').addEventListener('input', onSearchInput);
+      initMobileBottomSheet();
     });
 
-    // Управление мобильной шторкой
-    function toggleMobileSheet() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('sheet-expanded');
-      updateTabButtons();
+    /* ==========================================================
+       ЖЕСТЫ И УПРАВЛЕНИЕ 3 ПОЛОЖЕНИЯМИ ШТОРКИ (2ГИС СТИЛЬ)
+       ========================================================== */
+    let currentSnap = 1; // 0 = collapsed (~78px), 1 = half (~46vh), 2 = full (88vh)
+    const sidebar = document.getElementById('sidebar');
+
+    function setSheetState(state) {
+      currentSnap = state;
+      sidebar.classList.remove('sheet-collapsed', 'sheet-half', 'sheet-full');
+      if (state === 0) sidebar.classList.add('sheet-collapsed');
+      else if (state === 1) sidebar.classList.add('sheet-half');
+      else sidebar.classList.add('sheet-full');
     }
 
-    function setMobileMode(mode) {
-      const sidebar = document.getElementById('sidebar');
-      if (mode === 'list') {
-        sidebar.classList.add('sheet-expanded');
-      } else {
-        sidebar.classList.remove('sheet-expanded');
-      }
-      updateTabButtons();
-    }
+    function initMobileBottomSheet() {
+      const handle = document.getElementById('sheetHandle');
+      let startY = 0;
+      let isDragging = false;
 
-    function updateTabButtons() {
-      const isExp = document.getElementById('sidebar').classList.contains('sheet-expanded');
-      document.getElementById('tabListBtn').classList.toggle('active', isExp);
-      document.getElementById('tabMapBtn').classList.toggle('active', !isExp);
+      handle.addEventListener('click', () => {
+        // Циклическое переключение при тапе по ручке
+        if (currentSnap === 0) setSheetState(1);
+        else if (currentSnap === 1) setSheetState(2);
+        else setSheetState(0);
+      });
+
+      handle.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const endY = e.changedTouches[0].clientY;
+        const diff = endY - startY;
+
+        if (diff > 45) {
+          // Свайп вниз
+          if (currentSnap === 2) setSheetState(1);
+          else if (currentSnap === 1) setSheetState(0);
+        } else if (diff < -45) {
+          // Свайп вверх
+          if (currentSnap === 0) setSheetState(1);
+          else if (currentSnap === 1) setSheetState(2);
+        }
+      });
+
+      // При фокусе на поиск автоматически приподнимаем меню
+      document.getElementById('searchInput').addEventListener('focus', () => {
+        if (window.innerWidth <= 768 && currentSnap === 0) {
+          setSheetState(1);
+        }
+      });
     }
 
     function drawOkrugBoundary(boundaryKey) {
@@ -1488,7 +1485,6 @@
 
       titleEl.textContent = distVal === 'all' ? 'Павлодарская область' : distVal;
 
-      // Если выбран район или город — всегда включаем тумблер УИК
       if (distVal !== "all" && distVal !== "Областная окружная избирательная комиссия") {
         document.getElementById('toggleUik').checked = true;
       }
@@ -1499,25 +1495,25 @@
         subtitleEl.textContent = "Все избирательные округа и участки области";
       } else if (distVal === "Областная окружная избирательная комиссия") {
         okrugGroup.style.display = "block";
-        okrugLabel.textContent = "2. Выбор ООИК (Областной округ)";
+        okrugLabel.textContent = "Выбор ООИК (Областной округ)";
         subtitleEl.textContent = "16 комиссий областных округов (ООИК № 1–16)";
         okrugSelect.innerHTML = `<option value="all">Все ООИК области</option>` +
           ooikRegistry.map(m => `<option value="${m.num}">${m.uik} — ${m.object.substring(0, 32)}...</option>`).join('');
       } else if (distVal === "город Павлодар") {
         okrugGroup.style.display = "block";
-        okrugLabel.textContent = "2. Выбор ГОИК (городской округ)";
+        okrugLabel.textContent = "Выбор ГОИК (городской округ)";
         subtitleEl.textContent = "24 городских округа (ГОИК № 1–24)";
         okrugSelect.innerHTML = `<option value="all">Все ГОИК города Павлодар</option>` +
           pvlGoikList.map(g => `<option value="${g.id}">ГОИК № ${g.id} — ${g.object.substring(0, 30)}...</option>`).join('');
       } else if (distVal === "город Экибастуз") {
         okrugGroup.style.display = "block";
-        okrugLabel.textContent = "2. Выбор ГОИК (городской округ)";
+        okrugLabel.textContent = "Выбор ГОИК (городской округ)";
         subtitleEl.textContent = "15 городских округов (ГОИК № 1–15)";
         okrugSelect.innerHTML = `<option value="all">Все ГОИК города Экибастуз</option>` +
           ekbGoikList.map(g => `<option value="${g.id}">ГОИК № ${g.id} — ${g.object.substring(0, 30)}...</option>`).join('');
       } else if (distVal === "город Аксу") {
         okrugGroup.style.display = "block";
-        okrugLabel.textContent = "2. Выбор ГОИК (городской округ)";
+        okrugLabel.textContent = "Выбор ГОИК (городской округ)";
         subtitleEl.textContent = "12 городских округов (ГОИК № 1–12)";
         okrugSelect.innerHTML = `<option value="all">Все ГОИК города Аксу</option>` +
           aksuGoikList.map(g => `<option value="${g.id}">ГОИК № ${g.id} — ${g.object.substring(0, 30)}...</option>`).join('');
@@ -1525,7 +1521,7 @@
         okrugGroup.style.display = "block";
         const isCity = distVal.startsWith("город");
         const prefix = isCity ? "ГОИК" : "РОИК";
-        okrugLabel.textContent = isCity ? `2. Городской избирательный округ (${prefix})` : `2. Районный избирательный округ (${prefix})`;
+        okrugLabel.textContent = isCity ? `Городской округ (${prefix})` : `Районный округ (${prefix})`;
         subtitleEl.textContent = `${districtRoioMap[distVal].length} округов (${distVal})`;
         
         okrugSelect.innerHTML = `<option value="all">Все ${prefix}</option>` +
@@ -1676,9 +1672,10 @@
         activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      // Если на телефоне кликнули по карточке из развернутого списка — сворачиваем шторку к карте
+      // На смартфонах при клике по участку опускаем шторку на уровень поиска (как в 2ГИС),
+      // чтобы сразу открыть карту с выбранным домом
       if (window.innerWidth <= 768) {
-        setMobileMode('map');
+        setSheetState(0);
       }
 
       myMap.setCenter([item.lat, item.lng], 16, { duration: 350 });
@@ -1689,7 +1686,6 @@
       const listContainer = document.getElementById('uikList');
       listContainer.innerHTML = '';
       document.getElementById('counterText').textContent = `Отображено: ${items.length}`;
-      document.getElementById('tabListBtn').textContent = `📋 Список (${items.length})`;
 
       items.forEach(item => {
         const li = document.createElement('li');
