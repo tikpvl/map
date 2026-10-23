@@ -2,114 +2,26 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Карта избирательных участков и комиссий</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>САЙЛАУ • Карта избирательных участков и комиссий</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <script src="https://api-maps.yandex.ru/2.1/?apikey=fd23e935-ff02-4ad4-9401-731a5f8afab7&lang=ru_RU"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #f1f5f9; }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0f172a; }
+
+    /* Карта на десктопе справа оставляет место под сайдбар */
     #map {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 440px;
+      top: 0; bottom: 0; left: 0; right: 440px;
       height: 100%;
       background: #e2e8f0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    #infoCard {
-      position: absolute;
-      top: 18px;
-      right: 458px;
-      width: 340px;
-      max-width: calc(100vw - 470px);
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
-      padding: 16px 18px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
-      z-index: 900;
-      display: none;
-      animation: fadeInCard 0.22s ease-out;
-    }
-
-    @keyframes fadeInCard {
-      from { opacity: 0; transform: translateY(-8px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .info-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .info-card-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      line-height: 1.25;
-    }
-
-    .btn-close-card {
-      background: rgba(148, 163, 184, 0.18);
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      font-size: 1.05rem;
-      color: #475569;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-    }
-
-    .btn-close-card:hover {
-      background: rgba(239, 68, 68, 0.18);
-      color: #dc2626;
-    }
-
-    .info-card-object {
-      font-size: 0.96rem;
-      font-weight: 700;
-      color: #0f172a;
-      line-height: 1.4;
-      margin-bottom: 8px;
-    }
-
-    .info-card-address {
-      font-size: 0.88rem;
-      color: #334155;
-      line-height: 1.4;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .info-card-district {
-      font-size: 0.82rem;
-      color: #64748b;
-      font-weight: 600;
-      border-top: 1px solid rgba(226, 232, 240, 0.8);
-      padding-top: 8px;
-      margin-top: 6px;
-    }
-
+    /* Сайдбар на десктопе */
     #sidebar {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
+      top: 0; bottom: 0; right: 0;
       width: 440px;
       height: 100%;
       background: #f8fafc;
@@ -117,21 +29,23 @@
       display: flex;
       flex-direction: column;
       z-index: 1000;
-      border-left: 1px solid #e2e8f0;
-      min-height: 0;
+      border-left: 1px solid #cbd5e1;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    .sheet-handle { display: none; }
+    .mobile-tab-bar { display: none; }
 
     .sidebar-header {
       padding: 14px 18px 12px 18px;
       background: linear-gradient(135deg, #064e5b 0%, #083344 100%);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(6, 78, 91, 0.18);
       flex-shrink: 0;
     }
 
     .sidebar-header h2 {
       font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.3px;
       margin-bottom: 2px;
       color: #ffffff;
@@ -142,19 +56,19 @@
     }
 
     .sidebar-header p {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: #99f6e4;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .toggles-container {
       display: flex;
       gap: 10px;
       background: rgba(255, 255, 255, 0.08);
-      padding: 7px 12px;
+      padding: 6px 10px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      margin-bottom: 8px;
       align-items: center;
       justify-content: space-around;
     }
@@ -173,11 +87,7 @@
       height: 22px;
     }
 
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
       position: absolute;
@@ -205,7 +115,7 @@
     input:checked + .slider:before { transform: translateX(16px); }
 
     .toggle-label {
-      font-size: 0.76rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: #f1f5f9;
       letter-spacing: 0.3px;
@@ -215,7 +125,7 @@
     
     .form-label {
       display: block;
-      font-size: 0.66rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: #cbd5e1;
@@ -225,12 +135,13 @@
 
     .select-control, .search-control {
       width: 100%;
-      padding: 7px 11px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.08);
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.1);
       color: #ffffff;
-      font-size: 0.84rem;
+      font-size: 0.92rem;
       outline: none;
       backdrop-filter: blur(8px);
       transition: all 0.2s ease;
@@ -239,8 +150,8 @@
 
     .select-control:focus, .search-control:focus {
       border-color: #38bdf8;
-      background: rgba(255, 255, 255, 0.14);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
     }
 
     .select-control option, .select-control optgroup {
@@ -248,13 +159,11 @@
       color: #ffffff;
     }
 
-    .search-control::placeholder {
-      color: #94a3b8;
-    }
+    .search-control::placeholder { color: #94a3b8; }
 
     .counter {
       padding: 8px 18px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #0f766e;
       background: #f0fdfa;
       border-bottom: 1px solid #ccfbf1;
@@ -270,43 +179,42 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       list-style: none;
-      padding: 8px 12px;
+      padding: 10px 12px;
       min-height: 0;
     }
 
     .item {
-      padding: 11px 14px;
-      margin-bottom: 6px;
+      padding: 13px 15px;
+      margin-bottom: 8px;
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.18s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
     .item:hover {
       border-color: #0d9488;
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.08);
     }
 
     .item.active-item {
       background: #f0fdfa;
       border-color: #0d9488;
-      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.25);
     }
 
     .item-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
 
     .item-title {
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       letter-spacing: -0.2px;
       white-space: nowrap;
     }
@@ -314,69 +222,231 @@
     .item-badges { display: flex; gap: 4px; flex-wrap: wrap; }
 
     .badge-district {
-      font-size: 0.68rem;
-      padding: 2px 5px;
+      font-size: 0.72rem;
+      padding: 2px 6px;
       background: #f1f5f9;
-      color: #475569;
-      border-radius: 4px;
+      color: #334155;
+      border-radius: 5px;
       font-weight: 700;
     }
 
     .badge-okrug {
-      font-size: 0.68rem;
-      padding: 2px 5px;
+      font-size: 0.72rem;
+      padding: 2px 6px;
       background: #fef3c7;
       color: #92400e;
-      border-radius: 4px;
+      border-radius: 5px;
       font-weight: 700;
     }
 
     .badge-goik {
-      font-size: 0.68rem;
-      padding: 2px 5px;
+      font-size: 0.72rem;
+      padding: 2px 6px;
       background: #e0f2fe;
       color: #0369a1;
-      border-radius: 4px;
+      border-radius: 5px;
       font-weight: 700;
     }
 
     .item-object {
-      font-size: 0.82rem;
-      color: #1e293b;
-      margin-bottom: 2px;
+      font-size: 0.92rem;
+      color: #0f172a;
+      margin-bottom: 3px;
       line-height: 1.35;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .item-address {
-      font-size: 0.76rem;
-      color: #64748b;
+      font-size: 0.84rem;
+      color: #475569;
+      line-height: 1.3;
     }
 
+    /* Карточка с деталями */
+    #infoCard {
+      position: absolute;
+      top: 18px;
+      right: 458px;
+      width: 360px;
+      max-width: calc(100vw - 480px);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.2);
+      z-index: 1100;
+      display: none;
+      animation: fadeInCard 0.22s ease-out;
+    }
+
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .info-card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.25;
+    }
+
+    .btn-close-card {
+      background: #e2e8f0;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.15rem;
+      color: #1e293b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .info-card-object {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .info-card-address {
+      font-size: 0.92rem;
+      color: #334155;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .info-card-district {
+      font-size: 0.84rem;
+      color: #64748b;
+      font-weight: 700;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 8px;
+    }
+
+    /* ========================================================
+       АДАПТИВ ДЛЯ ТЕЛЕФОНОВ: ШТОРКА С ПЕРЕКЛЮЧЕНИЕМ КАРТА / СПИСОК
+       ======================================================== */
     @media (max-width: 768px) {
       #map {
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 50%;
-        height: 50%; width: 100%;
+        top: 0; left: 0; right: 0; bottom: 0;
+        height: 100%; width: 100%;
       }
+
+      /* Нижняя панель-шторка на мобилках */
       #sidebar {
         position: absolute;
-        top: 50%; left: 0; right: 0; bottom: 0;
-        width: 100%; height: 50%;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 82vh;
         border-left: none;
-        border-top: 2px solid #0d9488;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.28);
+        transform: translateY(calc(100% - 215px)); /* В свернутом виде видны фильтры */
+        z-index: 1050;
       }
-      #infoCard {
-        right: 12px; top: 12px;
-        width: calc(100% - 24px);
-        max-width: none;
+
+      /* Класс развернутого списка */
+      #sidebar.sheet-expanded {
+        transform: translateY(0);
       }
+
+      /* Ручка для свайпа шторки */
+      .sheet-handle {
+        display: block;
+        width: 100%;
+        padding: 8px 0 4px 0;
+        text-align: center;
+        background: #064e5b;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        cursor: pointer;
+      }
+
+      .handle-bar {
+        width: 44px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        margin: 0 auto;
+      }
+
+      /* Кнопки переключения режимов на телефоне */
+      .mobile-tab-bar {
+        display: flex;
+        background: #064e5b;
+        padding: 4px 14px 8px 14px;
+        gap: 8px;
+      }
+
+      .tab-btn {
+        flex: 1;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 0.88rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .tab-btn.active {
+        background: #ffffff;
+        color: #064e5b;
+        border-color: #ffffff;
+      }
+
       .sidebar-header {
-        padding: 10px 14px 8px 14px;
+        padding: 6px 14px 10px 14px;
       }
+
+      .sidebar-header h2 { font-size: 1.05rem; }
+      .sidebar-header p { display: none; }
+
       .toggles-container {
         margin-bottom: 6px;
-        padding: 4px 8px;
+        padding: 5px 8px;
+      }
+
+      .form-group { margin-bottom: 5px; }
+
+      .select-control, .search-control {
+        height: 40px;
+        font-size: 0.88rem;
+      }
+
+      #infoCard {
+        right: 12px;
+        left: 12px;
+        top: 12px;
+        width: calc(100% - 24px);
+        max-width: none;
+        z-index: 1200;
       }
     }
   </style>
@@ -385,6 +455,7 @@
 
   <div id="map"></div>
 
+  <!-- Всплывающая карточка выбранного участка/округа -->
   <div id="infoCard">
     <div class="info-card-header">
       <div id="cardTitle" class="info-card-title"></div>
@@ -396,10 +467,22 @@
   </div>
 
   <div id="sidebar">
+    <!-- Ручка шторки для телефонов -->
+    <div class="sheet-handle" onclick="toggleMobileSheet()">
+      <div class="handle-bar"></div>
+    </div>
+
+    <!-- Кнопки мобильного переключения -->
+    <div class="mobile-tab-bar">
+      <button class="tab-btn active" id="tabMapBtn" onclick="setMobileMode('map')">🗺️ Карта</button>
+      <button class="tab-btn" id="tabListBtn" onclick="setMobileMode('list')">📋 Список участков</button>
+    </div>
+
     <div class="sidebar-header">
       <h2 id="districtTitle">Павлодарская область</h2>
       <p id="districtSubtitle">Избирательные округа и участки</p>
       
+      <!-- Тумблеры Округа / Участки -->
       <div class="toggles-container">
         <label class="toggle-item" title="Показывать избирательные округа (ООИК / ГОИК / РОИК)">
           <div class="toggle-switch">
@@ -417,6 +500,7 @@
         </label>
       </div>
 
+      <!-- 1. Выбор территории -->
       <div class="form-group">
         <label class="form-label" for="districtSelect">1. Выбор территории</label>
         <select id="districtSelect" class="select-control" onchange="onDistrictChange()">
@@ -442,6 +526,7 @@
         </select>
       </div>
 
+      <!-- 2. Выбор округа -->
       <div class="form-group" id="okrugGroup">
         <label class="form-label" for="okrugSelect" id="okrugLabel">2. Выбор округа</label>
         <select id="okrugSelect" class="select-control" onchange="onOkrugChange()">
@@ -449,7 +534,8 @@
         </select>
       </div>
 
-      <div class="form-group" style="margin-bottom: 2px;">
+      <!-- 3. Поиск -->
+      <div class="form-group">
         <label class="form-label" for="searchInput">3. Поиск</label>
         <input type="text" id="searchInput" class="search-control" placeholder="Поиск по номеру ООИК/ГОИК/РОИК/УИК, адресу...">
       </div>
@@ -500,7 +586,7 @@
       [16, 52.493154, 78.166069, "Щербактинский аграрно-технический колледж (тел. 871836-21602)", "село Шарбакты, улица Чкалова, 27", "Щербактинский район"]
     ];
 
-    // 24 ГОИК г. Павлодар
+    // 24 ГОИК Павлодар
     const pvlGoikList = [
       { id: 1, lat: 52.260746, lng: 76.776429, object: "ГККП «Дом культуры имени Жаяу Мусы»", address: "г. Павлодар, поселок Атамекен, ул. Сарыарқа 53/1", tel: "7182650970", uiks: [41, 42, 43, 44, 111, 128, 583] },
       { id: 2, lat: 52.339210, lng: 76.883410, object: "КГУ «СОШ № 30 города Павлодара»", address: "г. Павлодар, ул. Баян батыр 27", tel: "7182650982", uiks: [1, 2, 5, 47, 48, 49, 116, 117] },
@@ -528,7 +614,7 @@
       { id: 24, lat: 52.244526, lng: 76.992546, object: "КГУ «СОШ № 21 города Павлодара»", address: "г. Павлодар, ул. Камзина 346", tel: "7182650993", uiks: [50, 53, 99, 100, 101, 102, 104, 108, 109, 125, 132, 133, 596] }
     ];
 
-    // 15 ГОИК г. Экибастуз
+    // 15 ГОИК Экибастуз
     const ekbGoikList = [
       { id: 1, lat: 51.744851, lng: 75.317996, object: "КГУ «СОШ № 33»", address: "г. Экибастуз, ул. Мәшһүр Жүсіп 4", tel: "650962", uiks: [513, 514, 515] },
       { id: 2, lat: 51.722255, lng: 75.299796, object: "КГУ «СОШ № 18»", address: "г. Экибастуз, бульвар ак. Марденова 7", tel: "650964", uiks: [517, 528, 570] },
@@ -547,7 +633,7 @@
       { id: 15, lat: 51.729692, lng: 75.326629, object: "КГКП «Дом культуры «Макпал»", address: "г. Экибастуз, бульвар Жамбула 1/1", tel: "650934", uiks: [519, 544, 545, 546, 547, 550, 551, 552, 553, 554, 555, 557, 558, 559, 562, 563] }
     ];
 
-    // 12 ГОИК г. Аксу
+    // 12 ГОИК Аксу
     const aksuGoikList = [
       { id: 1, lat: 52.040688, lng: 76.923079, object: "КГП на ПХВ «Аксуский колледж им. Жаяу Мусы»", address: "г. Аксу, ул. Ауэзова 12А", tel: "650942", uiks: [478, 508] },
       { id: 2, lat: 52.040688, lng: 76.923079, object: "КГП на ПХВ «Аксуский колледж им. Жаяу Мусы»", address: "г. Аксу, ул. Ауэзова 12А", tel: "650943", uiks: [475, 477, 506] },
@@ -717,6 +803,7 @@
       return null;
     }
 
+    // Реестр УИК
     const fullRawData = [
       [1,52.344909,76.874588,"ГККП «Дворец культуры имени Естая»","улица 6 Жанааульская 6/1","город Павлодар"],
       [5,52.302151,76.92183,"ГУ «Областная казахская гимназия-интернат им. И. Алтынсарина»","улица Айманова 35","город Павлодар"],
@@ -1316,6 +1403,29 @@
       document.getElementById('searchInput').addEventListener('input', onSearchInput);
     });
 
+    // Управление мобильной шторкой
+    function toggleMobileSheet() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('sheet-expanded');
+      updateTabButtons();
+    }
+
+    function setMobileMode(mode) {
+      const sidebar = document.getElementById('sidebar');
+      if (mode === 'list') {
+        sidebar.classList.add('sheet-expanded');
+      } else {
+        sidebar.classList.remove('sheet-expanded');
+      }
+      updateTabButtons();
+    }
+
+    function updateTabButtons() {
+      const isExp = document.getElementById('sidebar').classList.contains('sheet-expanded');
+      document.getElementById('tabListBtn').classList.toggle('active', isExp);
+      document.getElementById('tabMapBtn').classList.toggle('active', !isExp);
+    }
+
     function drawOkrugBoundary(boundaryKey) {
       if (activePolygon) {
         myMap.geoObjects.remove(activePolygon);
@@ -1351,7 +1461,7 @@
 
       const titleHtml = `
         <span style="color: ${titleColor};">${item.uik}</span>
-        ${item.roio && item.type === "uik" ? `<span style="font-size:0.85rem; color:#d97706; margin-left:6px;">(${okrugPrefix} №${item.roio})</span>` : ''}
+        ${item.roio && item.type === "uik" ? `<span style="font-size:0.88rem; color:#d97706; margin-left:6px;">(${okrugPrefix} №${item.roio})</span>` : ''}
       `;
 
       document.getElementById('cardTitle').innerHTML = titleHtml;
@@ -1566,6 +1676,11 @@
         activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
+      // Если на телефоне кликнули по карточке из развернутого списка — сворачиваем шторку к карте
+      if (window.innerWidth <= 768) {
+        setMobileMode('map');
+      }
+
       myMap.setCenter([item.lat, item.lng], 16, { duration: 350 });
       openInfoCard(item);
     }
@@ -1574,6 +1689,7 @@
       const listContainer = document.getElementById('uikList');
       listContainer.innerHTML = '';
       document.getElementById('counterText').textContent = `Отображено: ${items.length}`;
+      document.getElementById('tabListBtn').textContent = `📋 Список (${items.length})`;
 
       items.forEach(item => {
         const li = document.createElement('li');
